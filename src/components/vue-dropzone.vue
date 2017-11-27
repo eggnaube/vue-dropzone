@@ -59,7 +59,7 @@ export default {
     manuallyAddFile: function(file, fileUrl) {
       file.manuallyAdded = true;
       this.dropzone.emit("addedfile", file);
-      this.dropzone.emit("thumbnail", file, fileUrl);
+      fileUrl && this.dropzone.emit("thumbnail", file, fileUrl);
 
       var thumbnails = file.previewElement.querySelectorAll('[data-dz-thumbnail]');
       for (var i = 0; i < thumbnails.length; i++) {
@@ -155,7 +155,7 @@ export default {
       return this.dropzone.getActiveFiles()
     },
     getSignedAndUploadToS3(file) {
-      awsEndpoint.sendFile(file, this.awss3.signingURL)
+      awsEndpoint.sendFile(file, this.awss3.signingURL, this.awss3.headers)
         .then((response) => {
           if (response.success) {
             file.s3ObjectLocation = response.message
@@ -297,7 +297,7 @@ export default {
     })
 
     this.dropzone.on('queuecomplete', function() {
-      vm.$emit('vdropzone-queuecomplete')
+      vm.$emit('vdropzone-queue-complete')
     })
 
     this.dropzone.on('drop', function(event) {
